@@ -65,7 +65,7 @@ set_khpd_pages_to_scan()         { echo $1 > $KHPDDIR/pages_to_scan; }
 set_khpd_scan_sleep_millisecs()  { echo $1 > $KHPDDIR/scan_sleep_millisecs; }
 default_khpd_alloc_sleep_millisecs=60000
 default_khpd_defrag=1
-default_khpd_max_ptes_none=511
+default_khpd_max_ptes_none=31
 default_khpd_pages_to_scan=4096
 default_khpd_scan_sleep_millisecs=10000
 default_tuning_parameters() {

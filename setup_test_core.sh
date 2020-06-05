@@ -4,7 +4,7 @@ export PIPE=$GTMPD/pipe
 mkfifo ${PIPE} 2> /dev/null
 [ ! -p ${PIPE} ] && echo_log "Fail to create pipe." >&2 && exit 1
 chmod a+x ${PIPE}
-export PIPETIMEOUT=5
+export PIPETIMEOUT=10
 
 get_kernel_message_before() { dmesg > $TMPD/_dmesg_before; }
 get_kernel_message_after() { dmesg > $TMPD/_dmesg_after; }

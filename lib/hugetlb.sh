@@ -69,13 +69,13 @@ show_hugetlb_pool() {
 	if [ ! "$NUMNODE" ] || [ "$NUMNODE" -eq 0 ] ; then
 		return
 	fi
-	if [ "$total" -ne 0 ] || [ "$free" -ne 0 ] || [ "$reserved" -ne 0 ] || [ "$surplus" -ne 0 ] ; then
-		for size in $(get_available_pool_size) ; do
-			for i in $(seq 0 $[NUMNODE - 1]) ; do
-				echo "node:$i, size:$size (total/free/inuse/surp): $(get_hugepage_total_node $i $size)/$(get_hugepage_free_node $i $size)/$(get_hugepage_inuse_node $i $size)/$(get_hugepage_surplus_node $i $size)"
-			done
-		done
-	fi
+        if [ "$total" -ne 0 ] || [ "$free" -ne 0 ] || [ "$reserved" -ne 0 ] || [ "$surplus" -ne 0 ] ; then
+                for size in $(get_available_pool_size) ; do
+                        for i in $(seq 0 $[NUMNODE - 1]) ; do
+                                echo "node:${NODE[$i]}, size:$size (total/free/inuse/surp): $(get_hugepage_total_node ${NODE[$i]} $size)/$(get_hugepage_free_node ${NODE[$i]} $size)/$(get_hugepage_inuse_node ${NODE[$i]} $size)/$(get_hugepage_surplus_node ${NODE[$i]} $size)"
+                        done
+                done
+        fi
 }
 
 # make sure that hugetlb pool is empty at the beginning/ending of the testcase

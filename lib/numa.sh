@@ -1,5 +1,8 @@
 NUMNODE=$(numactl -H | grep available | cut -f2 -d' ')
 
+NUMALIST=$(numactl -H | grep "^node [0-9]* size" | awk '{ print $2 }' | tr "\n" " ")
+NODE=(${NUMALIST// / })
+
 numa_check() {
 	if ! [ "$NUMNODE" -gt 1 ] ; then
 		echo_log "No NUMA system"
@@ -12,7 +15,7 @@ get_numa_maps() { cat /proc/$1/numa_maps; }
 
 do_migratepages() {
 	if [ $# -ne 3 ] ; then
-		migratepages $1 0 1;
+		migratepages $1 0 8;
 	else
 		migratepages "$1" "$2" "$3";
 	fi

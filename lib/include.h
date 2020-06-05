@@ -21,7 +21,7 @@
 #define MMAP_PROT PROT_READ|PROT_WRITE
 #define err(x) perror(x),exit(EXIT_FAILURE)
 #define errmsg(x, ...) fprintf(stderr, x, ##__VA_ARGS__),exit(EXIT_FAILURE)
-#define PSIZE 4096UL
+#define PSIZE 65536UL
 #define PS PSIZE
 #define PAGE_SIZE PSIZE
 #define PAGE_SHIFT 12

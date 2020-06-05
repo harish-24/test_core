@@ -42,16 +42,16 @@ inject_error() {
 	local bank=1
 
     if [ "$ERRORTYPE" = "hard-offline" ] ; then
-        echo $[$TARGET * 4096] > /sys/devices/system/memory/hard_offline_page 2> /dev/null
+        echo $[$TARGET * 65536] > /sys/devices/system/memory/hard_offline_page 2> /dev/null
     elif [ "$ERRORTYPE" = "soft-offline" ] ; then
-        echo $[$TARGET * 4096] > /sys/devices/system/memory/soft_offline_page 2> /dev/null
+        echo $[$TARGET * 65536] > /sys/devices/system/memory/soft_offline_page 2> /dev/null
     elif [ "$ERRORTYPE" = "mce-srao" ] ; then
 		if [ -e /dev/mcelog ] ; then
 			cat <<EOF > $tmpd/mce-inject
 CPU $cpu BANK $bank
 STATUS UNCORRECTED SRAO 0x17a
 MCGSTATUS RIPV MCIP
-ADDR $[$TARGET * 4096]
+ADDR $[$TARGET * 65536]
 MISC 0x8c
 RIP 0x73:0x1eadbabe
 EOF
@@ -59,7 +59,7 @@ EOF
 		elif [ -d "$SYSDIR" ] ; then
 			echo $cpu               > $SYSDIR/cpu
 			echo hw                 > $SYSDIR/flags
-			echo $[$TARGET * 4096]  > $SYSDIR/addr
+			echo $[$TARGET * 65536]  > $SYSDIR/addr
 			echo 0xbd0000000000017a > $SYSDIR/status
 			echo 0x8c               > $SYSDIR/misc
 			echo 0                  > $SYSDIR/synd
@@ -73,7 +73,7 @@ EOF
 CPU $cpu BANK $bank
 STATUS UNCORRECTED SRAR 0x134
 MCGSTATUS RIPV MCIP EIPV
-ADDR $[$TARGET * 4096]
+ADDR $[$TARGET * 65536]
 MISC 0x8c
 RIP 0x73:0x3eadbabe
 EOF
@@ -81,7 +81,7 @@ EOF
 		elif [ -d "$SYSDIR" ] ; then
 			echo $cpu               > $SYSDIR/cpu
 			echo hw                 > $SYSDIR/flags
-			echo $[$TARGET * 4096]  > $SYSDIR/addr
+			echo $[$TARGET * 65536]  > $SYSDIR/addr
 			echo 0xbd80000000000134 > $SYSDIR/status
 			echo 0x8c               > $SYSDIR/misc
 			echo 0                  > $SYSDIR/synd
@@ -94,13 +94,13 @@ EOF
 			cat <<EOF > $tmpd/mce-inject
 CPU $cpu BANK $bank
 STATUS CORRECTED 0xc0
-ADDR $[$TARGET * 4096]
+ADDR $[$TARGET * 65536]
 EOF
 			mce-inject $tmpd/mce-inject
 		elif [ ! -d "$SYSDIR" ] ; then
 			echo $cpu               > $SYSDIR/cpu
 			echo hw                 > $SYSDIR/flags
-			echo $[$TARGET * 4096]  > $SYSDIR/addr
+			echo $[$TARGET * 65536]  > $SYSDIR/addr
 			echo 0x9c000000000000c0 > $SYSDIR/status
 			echo 0x8c               > $SYSDIR/misc
 			echo 0                  > $SYSDIR/synd
@@ -127,6 +127,9 @@ if [ ! "$PFN" ] ; then
 fi
 
 if [ "$PID" ] ; then
+    #hexdump -o /proc/$PID/pagemap
+    echo "$PFN * 8"
+    echo "0x$(ruby -e 'printf "%x\n", IO.read("/proc/'$PID'/pagemap", 0x8, '$PFN'*8).unpack("Q")[1]')"
     TARGET=0x$(ruby -e 'printf "%x\n", IO.read("/proc/'$PID'/pagemap", 0x8, '$PFN'*8).unpack("Q")[0] & 0xfffffffffff')
 	if [ "$TARGET" == 0x ] ; then
 		echo failed to get target pfn from pagemap

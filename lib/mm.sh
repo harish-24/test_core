@@ -283,12 +283,11 @@ get_mm_global_stats() {
 get_mm_stats_pid() {
 	local tag=$1
 	local pid=$2
-
 	check_process_status $pid || return
 	get_numa_maps $pid > $TMPD/numa_maps.$tag
 	get_smaps_block $pid smaps.$tag 70 > /dev/null
-	get_pagetypes $pid pagetypes.$tag -rla 0x700000000+0x10000000
-	get_pagemap $pid .mig.$tag -NrLa 0x700000000+0x10000000 > /dev/null
+	get_pagetypes $pid pagetypes.$tag > /dev/null
+	get_pagemap $pid .mig.$tag > /dev/null
 	cp /proc/$pid/status $TMPD/proc_status.$tag
 	cp /proc/$pid/sched $TMPD/proc_sched.$tag
 	taskset -p $pid > $TMPD/taskset.$tag
